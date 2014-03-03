@@ -28,22 +28,22 @@ class zenpageContent {
 	function __construct() {
 	}
  
-	static function getPageContent($titlelink = '', $published = true) {
+	static function getPageContent($titlelink, $published = true) {
 		return self::getZenpageContent($titlelink, $published,'content', 'page');
 	}
 	
-	static function getPageExtraContent($titlelink = '', $published = true) {
+	static function getPageExtraContent($titlelink, $published = true) {
 		return self::getZenpageContent($titlelink, $published,'extracontent', 'page');
 	}
-	static function getArticleContent($titlelink = '', $published = true) {
+	static function getArticleContent($titlelink, $published = true) {
 		return self::getZenpageContent($titlelink, $published,'content', 'news');
 	}
 	
-	static function getArticleExtraContent($titlelink = '', $published = true) {
+	static function getArticleExtraContent($titlelink, $published = true) {
 		return self::getZenpageContent($titlelink, $published,'extracontent', 'news');
 	}
 	
-	static function getZenpageContent($titlelink = '', $published = true, $contenttype = 'content', $itemtype ='page') {
+	static function getZenpageContent($titlelink, $published = true, $contenttype = 'content', $itemtype ='page') {
 		if(!empty($titlelink)) {
 			switch($itemtype) {
 				case 'page':
