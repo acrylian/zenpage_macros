@@ -1,4 +1,5 @@
-zenpage_content
+zenpage_macros
 ===============
 
-A Zenphoto plugin to provide a content macros to print the content/extra content of a Zenpage page or news article
+A Zenphoto plugin to provide various content macros for Zenpage CMS items.
+See file header for documentation.
