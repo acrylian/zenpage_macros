@@ -30,8 +30,7 @@ $plugin_description = gettext('A Zenphoto plugin to provide various content macr
 $plugin_author = 'Malte Müller (acrylian) with from inspiration by Vincent Bourganel (vincent3569)';
 $plugin_version = '1.0';
 
-zp_register_filter('content_macro','zenpageMacros::zenpageContent_macro');
-zp_register_filter('content_macro','zenpageMacros::subpages_macro');
+zp_register_filter('content_macro','zenpageMacros::zenpage_macros');
 
 class zenpageMacros {
 	
@@ -42,7 +41,6 @@ class zenpageMacros {
  	* @param string $titlelink The item to get
   * @param bool $published If published or not
   */
-  
 	static function getPageContent($titlelink, $published = true) {
 		return self::getZenpageContent($titlelink, $published,'content', 'page');
 	}
@@ -51,7 +49,6 @@ class zenpageMacros {
  	* @param string $titlelink The item to get
   * @param bool $published If published or not
   */
-  
 	static function getPageExtraContent($titlelink, $published = true) {
 		return self::getZenpageContent($titlelink, $published,'extracontent', 'page');
 	}
@@ -59,7 +56,6 @@ class zenpageMacros {
  	* @param string $titlelink The item to get
   * @param bool $published If published or not
   */
-  
 	static function getArticleContent($titlelink, $published = true) {
 		return self::getZenpageContent($titlelink, $published,'content', 'news');
 	}
@@ -142,7 +138,7 @@ class zenpageMacros {
 	* @param array $macros
 	* return array
 	*/
-	static function zenpage_macro($macros) {
+	static function zenpage_macros($macros) {
 		$macros['PAGECONTENT'] = array(
 					'class'=>'function',
 					'params'=> array('string','bool*'), 
