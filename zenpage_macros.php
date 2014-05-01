@@ -133,10 +133,10 @@ class zenpageMacros {
 				$subcount++;
 				$pagetitle = html_encode($pageobj->getTitle());
 				$html .= '<div class="pageexcerpt">';
-				$html .= '<' . $headline . '><a href="' . html_encode(getPageLinkURL($pageobj->getTitlelink())) . '" title="' . strip_tags($pagetitle) . '">' . $pagetitle . '</a></' . $headline . '>';
+				$html .= '<' . $headline . '><a href="' . html_encode(getPageURL($pageobj->getTitlelink())) . '" title="' . strip_tags($pagetitle) . '">' . $pagetitle . '</a></' . $headline . '>';
 				$pagecontent = $pageobj->getContent();
 				if ($pageobj->checkAccess()) {
-					$html .= getContentShorten($pagecontent, $excerptlength, $shortenindicator, $readmore, getPageLinkURL($pageobj->getTitlelink()));
+					$html .= getContentShorten($pagecontent, $excerptlength, $shortenindicator, $readmore, getPageURL($pageobj->getTitlelink()));
 				} else {
 					$html .= '<p><em>' . gettext('This page is password protected') . '</em></p>';
 				}
