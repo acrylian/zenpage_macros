@@ -1,11 +1,11 @@
 <?php
 /**
  * A Zenphoto plugin to provide various content macros for Zenpage CMS items.
- * 
+ *
  * For content/extra content of a Zenpage page or news article:
- * [PAGECONTENT <titlelink> <publish true|false>]
+ * [PAGECONTENT <titlelink> <publish true|false> <title true|false> <header string>]
  * [PAGEEXTRACONTENT <titlelink> <publish true|false>]
- * [NEWSCONTENT <titlelink> <publish true|false>]
+ * [NEWSCONTENT <titlelink> <publish true|false>  <title true|false> <header string>]
  * [NEWSEXTRACONTENT <titlelink> <publish true|false>]
  *
  * Excerpts of the direct subpages (1 level) of the current Zenpage page:
@@ -24,51 +24,58 @@
  * @package plugins
  * @subpackage misc
  */
-	
+
 $plugin_is_filter = 9|THEME_PLUGIN|ADMIN_PLUGIN;
 $plugin_description = gettext('A Zenphoto plugin to provide various content macros for Zenpage CMS items.');
 $plugin_author = 'Malte Müller (acrylian) with from inspiration by Vincent Bourganel (vincent3569)';
 $plugin_version = '1.0';
 
-zp_register_filter('content_macro','zenpageMacros::zenpage_macros');
+zp_register_filter('content_macro', 'zenpageMacros::zenpage_macros');
 
 class zenpageMacros {
-	
+
 	function __construct() {
 	}
-	
- /* Gets the content of a page
- 	* @param string $titlelink The item to get
-  * @param bool $published If published or not
-  */
-	static function getPageContent($titlelink, $published = true) {
-		return self::getZenpageContent($titlelink, $published,'content', 'page');
+
+/* Gets the content of a page
+ * @param string $titlelink The item to get
+ * @param bool $published If published or not
+ * @param bool $title if page title have to be added or not
+ * @param string $header what <hx> tags have to be used for the title
+ */
+	static function getPageContent($titlelink, $published = true, $title = true, $header) {
+		return self::getZenpageContent($titlelink, $published, 'content', 'page', $title, $header);
 	}
-	
- /* Gets the content of a page
- 	* @param string $titlelink The item to get
-  * @param bool $published If published or not
-  */
+
+/* Gets the extra content of a page
+ * @param string $titlelink The item to get
+ * @param bool $published If published or not
+ */
 	static function getPageExtraContent($titlelink, $published = true) {
-		return self::getZenpageContent($titlelink, $published,'extracontent', 'page');
+		return self::getZenpageContent($titlelink, $published, 'extracontent', 'page');
 	}
- /* Gets the content of a page
- 	* @param string $titlelink The item to get
-  * @param bool $published If published or not
-  */
-	static function getArticleContent($titlelink, $published = true) {
-		return self::getZenpageContent($titlelink, $published,'content', 'news');
+
+/* Gets the content of a news
+ * @param string $titlelink The item to get
+ * @param bool $published If published or not
+ * @param bool $title if news title have to be added or not
+ * @param string $header what <hx> tags have to be used for the title
+ */
+	static function getArticleContent($titlelink, $published = true, $title = true, $header) {
+		return self::getZenpageContent($titlelink, $published, 'content', 'news', $title, $header);
 	}
-	
- /* Gets the content of a page
- 	* @param string $titlelink The item to get
-  * @param bool $published If published or not
-  */
+
+/* Gets the extra content of a news
+ * @param string $titlelink The item to get
+ * @param bool $published If published or not
+ */
 	static function getArticleExtraContent($titlelink, $published = true) {
-		return self::getZenpageContent($titlelink, $published,'extracontent', 'news');
+		return self::getZenpageContent($titlelink, $published, 'extracontent', 'news');
 	}
-	
-	static function getZenpageContent($titlelink, $published = true, $contenttype = 'content', $itemtype ='page') {
+
+/* getZenpageContent main function 
+ */
+	static function getZenpageContent($titlelink, $published = true, $contenttype = 'content', $itemtype = 'page', $title = true, $headline = 'h4') {
 		if(!empty($titlelink)) {
 			switch($itemtype) {
 				case 'page':
@@ -79,25 +86,31 @@ class zenpageMacros {
 					break;
 			}
 			if (($obj->getShow()) || ((!$obj->getShow()) && (!$published))) {
+				$html = '';
 				switch($contenttype) {
 					case 'content':
-						return html_encodeTagged($obj->getContent());
+						if ($title) {
+							$html .= '<' . $headline . '>' . html_encode($obj->getTitle()) . '</' . $headline . '>';
+						}
+						$html .= html_encodeTagged($obj->getContent());
+						return $html;
 						break;
 					case 'extracontent':
-						return html_encodeTagged($obj->getExtraContent());
+						$html .= html_encodeTagged($obj->getExtraContent());
+						return $html;
 						break;
-				}
-			} 
-	  }
+				} 
+			}
+		}
 	}
-	
-	/* Gets the html setup for the subpage list
- 	* @param string $header What to use as headline (h1 - h6)
-  * @param string $excerptlength The length of the page content, if nothing specifically set, the plugin option value for 'news article text length' is used
- 	* @param string $readmore The text for the link to the full page. If empty the read more setting from the options is used.
- 	* @param string $shortenindicator The optional placeholder that indicates that the content is shortened, if this is not set the plugin option "news article text shorten indicator" is used.
-  * @return string
-  */
+
+/* Gets the html setup for the subpage list
+ * @param string $header What to use as headline (h1 - h6)
+ * @param string $excerptlength The length of the page content, if nothing specifically set, the plugin option value for 'news article text length' is used
+ * @param string $readmore The text for the link to the full page. If empty the read more setting from the options is used.
+ * @param string $shortenindicator The optional placeholder that indicates that the content is shortened, if this is not set the plugin option "news article text shorten indicator" is used.
+ * @return string
+ */
 	static function getSubPagesHTML($header = 'h3', $excerptlength = NULL, $readmore = NULL, $shortenindicator = NULL) {
 		global $_zp_current_zenpage_page;
 		$html = '';
@@ -109,7 +122,7 @@ class zenpageMacros {
 		if (empty($excerptlength)) {
 			$excerptlength = ZP_SHORTEN_LENGTH;
 		}
-		if(in_array($header,array('h1','h2','h3','h4','h5','h6'))) {
+		if(in_array($header, array('h1', 'h2', 'h3', 'h4', 'h5', 'h6'))) {
 			$headline = $header;
 		} else {
 			$headline = 'h3';
@@ -120,7 +133,7 @@ class zenpageMacros {
 				$subcount++;
 				$pagetitle = html_encode($pageobj->getTitle());
 				$html .= '<div class="pageexcerpt">';
-				$html .= '<'.$headline.'><a href="' . html_encode(getPageLinkURL($pageobj->getTitlelink())) . '" title="' . strip_tags($pagetitle) . '">' . $pagetitle . '</a></'.$headline.'>';
+				$html .= '<' . $headline . '><a href="' . html_encode(getPageLinkURL($pageobj->getTitlelink())) . '" title="' . strip_tags($pagetitle) . '">' . $pagetitle . '</a></' . $headline . '>';
 				$pagecontent = $pageobj->getContent();
 				if ($pageobj->checkAccess()) {
 					$html .= getContentShorten($pagecontent, $excerptlength, $shortenindicator, $readmore, getPageLinkURL($pageobj->getTitlelink()));
@@ -132,50 +145,48 @@ class zenpageMacros {
 		}
 		return $html;
 	}
-	
- /*
-	* macro definition
-	* @param array $macros
-	* return array
-	*/
+
+/*
+ * macro definition
+ * @param array $macros
+ * return array
+ */
 	static function zenpage_macros($macros) {
 		$macros['PAGECONTENT'] = array(
 					'class'=>'function',
-					'params'=> array('string','bool*'), 
+					'params'=> array('string', 'bool*', 'bool*', 'string*'),
 					'value'=>'zenpageMacros::getPageContent',
 					'owner'=>'zenpageMacros',
-					'desc'=>gettext('Prints the content of the page with titlelink (%1) being published true|false (%2).')
+					'desc'=>gettext('Prints the content of the page with titlelink (%1) being published true|false (%2) with title true|false (%3) and headline h1-h6 to use (%4).')
 				);
 		$macros['PAGEEXTRACONTENT'] = array(
 					'class'=>'function',
-					'params'=> array('string','bool*'), 
+					'params'=> array('string', 'bool*'),
 					'value'=>'zenpageMacros::getPageExtraContent',
 					'owner'=>'zenpageMacros',
 					'desc'=>gettext('Prints the extra content of the page with titlelink (%1) being published true|false (%2).')
 				);
 		$macros['NEWSCONTENT'] = array(
 					'class'=>'function',
-					'params'=> array('string','bool*'), 
+					'params'=> array('string', 'bool*', 'bool*', 'string*'),
 					'value'=>'zenpageMacros::getArticleContent',
 					'owner'=>'zenpageMacros',
-					'desc'=>gettext('Prints the content of the ews article with titlelink (%1) being published true|false (%2).')
+					'desc'=>gettext('Prints the content of the news article with titlelink (%1) being published true|false (%2) with title true|false (%3) and headline h1-h6 to use (%4).')
 				);
 		$macros['NEWSEXTRACONTENT'] = array(
 					'class'=>'function',
-					'params'=> array('string','bool*'), 
+					'params'=> array('string', 'bool*'),
 					'value'=>'zenpageMacros::getArticleExtraContent',
 					'owner'=>'zenpageMacros',
 					'desc'=>gettext('Prints the extra content of the news article with titlelink (%1) being published true|false (%2).')
 				);
 		$macros['SUBPAGES'] = array(
 					'class'=>'function',
-					'params'=> array('string*','string*','string*','string*'), 
+					'params'=> array('string*', 'string*', 'string*', 'string*'), 
 					'value'=>'zenpageMacros::getSubPagesHTML',
 					'owner'=>'zenpageMacros',
 					'desc'=>gettext('Prints subpages of a Zenpage: Headline h1-h6 to use (%1), excerpt lenght (%2), readmore text (%3), shorten indicator text (%4). All optional, leave empty with empty quotes of you only need to set the last ones')
 				);
 		return $macros;
 	}
-
 } // class end
-
