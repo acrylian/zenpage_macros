@@ -1,7 +1,7 @@
 zenpage_macros
 ===============
 
-A Zenphoto plugin to provide various content macros for Zenpage CMS items.
+A [Zenphoto](http://www.zenphoto.org) plugin to provide various content macros for Zenpage CMS items.
 For content/extra content of a Zenpage page or news article:
 
 ```
