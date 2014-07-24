@@ -18,9 +18,9 @@
  * 	<p>read more</p>
  * </div>
  *
- * @license GPL v3 
- * @author Malte Müller (acrylian) with from inspiration by Vincent Bourganel (vincent3569)
- *
+ * @author Malte Müller (acrylian) <info@maltem.de> with from inspiration by Vincent Bourganel (vincent3569)
+ * @copyright 2014 Malte Müller
+ * @license GPL v3 or later
  * @package plugins
  * @subpackage misc
  */
@@ -28,7 +28,7 @@
 $plugin_is_filter = 9|THEME_PLUGIN|ADMIN_PLUGIN;
 $plugin_description = gettext('A Zenphoto plugin to provide various content macros for Zenpage CMS items.');
 $plugin_author = 'Malte Müller (acrylian) with from inspiration by Vincent Bourganel (vincent3569)';
-$plugin_version = '1.0';
+$plugin_version = '1.0.1';
 
 zp_register_filter('content_macro', 'zenpageMacros::zenpage_macros');
 
